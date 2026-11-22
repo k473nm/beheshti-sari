@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050d19">
+  <title>دبیرستان شهید بهشتی ساری</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- نوار بالا -->
+  <header class="navbar">
+    <a href="index.html" class="brand">دبیرستان شهید بهشتی <small>ساری</small></a>
+    <button class="menu-toggle" aria-label="باز کردن منو" aria-expanded="false">☰</button>
+    <nav class="nav-links" id="nav">
+      <a href="#top" class="active">خانه</a>
+      <a href="#news">اخبار</a>
+      <a href="#gallery">آرشیو عکس</a>
+    </nav>
+  </header>
+
+  <main id="top">
+
+    <!-- بخش اصلی: عکس پس‌زمینه در CSS (متغیر --hero-image) عوض می‌شه -->
+    <section class="hero">
+      <div class="hero-content">
+        <span class="kicker">خوش آمدید</span>
+        <h1>یادگیری، پیشرفت و موفقیت؛ <em>در کنار هم</em></h1>
+        <p>وب‌سایت رسمی دبیرستان شهید بهشتی ساری</p>
+        <a href="#news" class="btn">آخرین اخبار</a>
+      </div>
+    </section>
+
+    <!-- دسترسی سریع -->
+    <section class="quick">
+      <a href="#news" class="card"><span class="icon">📰</span><b>اخبار</b><small>آخرین اطلاعیه‌ها</small></a>
+      <a href="#gallery" class="card"><span class="icon">🖼️</span><b>آرشیو عکس</b><small>لحظه‌های مدرسه</small></a>
+      <a href="#" class="card soon"><span class="icon">📅</span><b>تقویم آموزشی</b><small>به‌زودی</small></a>
+      <a href="#" class="card soon"><span class="icon">👩‍🏫</span><b>دبیران</b><small>به‌زودی</small></a>
+    </section>
+
+    <!-- اخبار: کارت‌ها را js/main.js از data/news.json می‌سازد -->
+    <section class="section" id="news">
+      <h2>اخبار و اطلاعیه‌ها</h2>
+      <div class="news-grid" id="news-list">
+        <p class="muted">در حال بارگذاری...</p>
+      </div>
+    </section>
+
+    <!-- گالری -->
+    <section class="section" id="gallery">
+      <h2>لحظه‌هایی از مدرسه</h2>
+      <div class="gallery">
+        <figure><img src="images/library.jpg" alt="کتابخانه مدرسه" loading="lazy"><figcaption>کتابخانه</figcaption></figure>
+        <figure><img src="images/football-field.jpg" alt="زمین فوتبال مدرسه" loading="lazy"><figcaption>زمین فوتبال</figcaption></figure>
+        <figure><img src="images/fifa-event.jpg" alt="مسابقات فیفا در مدرسه" loading="lazy"><figcaption>مسابقات فیفا</figcaption></figure>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>© دبیرستان شهید بهشتی ساری</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
