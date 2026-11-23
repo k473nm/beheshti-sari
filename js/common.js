@@ -34,3 +34,9 @@ function newsCard(item) {
   card.append(el('time', '', item.date), el('b', '', item.title), el('p', '', item.summary));
   return card;
 }
+
+
+// ---------- تبدیل رقم‌های انگلیسی به فارسی ----------
+function faDigits(value) {
+  return String(value).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+}
