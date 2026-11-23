@@ -52,7 +52,7 @@ a { color: inherit; text-decoration: none; }
   min-height: 82vh; display: flex; align-items: center; padding: 100px 24px 60px;
   /* لایه‌ی تیره روی عکس، تا نرمی عکس دیده نشود و متن خوانا باشد */
   background:
-    linear-gradient(to left, rgba(5,13,25,.92) 15%, rgba(5,13,25,.35)),
+    linear-gradient(to left, rgba(5,13,25,.85) 20%, rgba(5,13,25,.2)),
     linear-gradient(to top, var(--bg), transparent 40%),
     var(--hero-image) center 35% / cover;
 }
