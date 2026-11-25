@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <title>پنل مدیریت</title>
-  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="stylesheet" href="css/style.css?v=6">
 </head>
 <body>
   <main class="admin">
@@ -13,10 +13,10 @@
 
     <section id="login-box" class="card">
       <form id="login-form">
-        <div class="field">
-          <label for="token">توکن دسترسی گیت‌هاب</label>
+        <label class="field">
+          <span>توکن دسترسی گیت‌هاب</span>
           <input id="token" type="password" autocomplete="off" required>
-        </div>
+        </label>
         <label><input id="remember" type="checkbox"> در این مرورگر به یاد داشته باش (فقط روی کامپیوتر شخصی)</label>
         <button type="submit">ورود</button>
       </form>
@@ -25,28 +25,21 @@
     <section id="panel" hidden>
       <div class="admin-bar">
         <span>متصل به: <b id="repo-name"></b></span>
-        <button id="logout" type="button">خروج</button>
+        <span class="row-actions">
+          <a href="index.html" class="back">مشاهده‌ی سایت</a>
+          <button id="logout" type="button" class="secondary">خروج</button>
+        </span>
       </div>
-
-      <h2>خبر جدید</h2>
-      <form id="news-form">
-        <div class="field"><label>عنوان</label><input name="title" required></div>
-        <div class="field"><label>تاریخ</label><input name="date" required></div>
-        <div class="field"><label>خلاصه (برای کارت خبر)</label><input name="summary" required></div>
-        <div class="field"><label>متن کامل (هر خط خالی = پاراگراف جدید)</label><textarea name="body"></textarea></div>
-        <div class="field"><label>عکس (اختیاری)</label><input name="image" type="file" accept="image/*"></div>
-        <img id="preview" class="preview" alt="" hidden>
-        <button type="submit">ثبت خبر</button>
-      </form>
-
-      <h2>اخبار موجود</h2>
-      <div id="news-list"></div>
+      <div id="tabs" class="tabs"></div>
+      <div id="editors"></div>
     </section>
 
-    <p id="status" class="status"></p>
+    <p id="status" class="status" role="status"></p>
   </main>
 
-  <script src="js/common.js"></script>
-  <script src="js/admin.js"></script>
+  <script src="js/common.js?v=2"></script>
+  <script src="js/github.js?v=2"></script>
+  <script src="js/admin-config.js?v=2"></script>
+  <script src="js/admin.js?v=2"></script>
 </body>
 </html>
