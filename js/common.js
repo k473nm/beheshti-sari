@@ -31,6 +31,13 @@ function el(tag, className, text) {
 function newsCard(item) {
   const card = el('a', 'card news-card');
   card.href = `news.html?id=${encodeURIComponent(item.id)}`;
+  if (item.image) {
+    const img = el('img', 'news-img');
+    img.src = item.image;
+    img.alt = '';
+    img.loading = 'lazy';
+    card.append(img);
+  }
   card.append(el('time', '', item.date), el('b', '', item.title), el('p', '', item.summary));
   return card;
 }
