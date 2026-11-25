@@ -47,3 +47,21 @@ function newsCard(item) {
 function faDigits(value) {
   return String(value).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
 }
+
+
+// ---------- برچسب‌های مشترک پنل مدیریت ----------
+// توجه: این فهرست‌ها باید با CATEGORIES در honors.js و TYPES در calendar.js یکی باشند
+const HONOR_CATEGORIES = { olympiad: 'المپیاد', konkoor: 'کنکور', kharazmi: 'جشنواره خوارزمی', other: 'سایر' };
+const EVENT_TYPES = { event: 'رویداد', exam: 'امتحان', holiday: 'تعطیلی' };
+
+// ---------- ورود پنهان به پنل مدیریت ----------
+// ۵ بار پشت‌سرهم (در ۳ ثانیه) روی نوشته‌ی پاورقی بزن
+const footerText = document.querySelector('.footer p');
+if (footerText) {
+  let taps = [];
+  footerText.addEventListener('click', () => {
+    const now = Date.now();
+    taps = [...taps.filter(time => now - time < 3000), now];
+    if (taps.length >= 5) location.href = 'admin.html';
+  });
+}
