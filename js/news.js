@@ -30,6 +30,12 @@ function showArticle(item) {
   back.href = 'news.html';
   const article = el('article', 'article');
   article.append(el('time', '', item.date), el('h1', '', item.title));
+    if (item.image) {
+    const img = el('img', 'article-img');
+    img.src = item.image;
+    img.alt = item.title;
+    article.append(img);
+  }
   // هر خط خالی در متن، یک پاراگراف جدید می‌سازد
   (item.body || item.summary).split('\n\n').forEach(p => article.append(el('p', '', p)));
   view.append(back, article);
