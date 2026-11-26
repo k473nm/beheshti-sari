@@ -50,7 +50,8 @@ const SECTIONS = {
     file: 'data/honors.json',
     addTo: 'end',
     sort: (a, b) => b.year - a.year,
-    describe: item => `${faDigits(item.year)} — ${item.title}`,
+       { name: 'description', label: 'توضیح (اختیاری)', kind: 'textarea' },
+      { name: 'image', label: 'عکس (اختیاری)', kind: 'image', folder: 'images/honors' }
     fields: [
       { name: 'title', label: 'عنوان افتخار', kind: 'text', required: true },
       { name: 'category', label: 'دسته', kind: 'select', required: true, options: HONOR_CATEGORIES },
