@@ -64,5 +64,14 @@ const github = {
       method: 'PUT',
       body: JSON.stringify({ message, content: base64, branch: this.branch, ...(sha ? { sha } : {}) })
     });
+  },
+
+  // حذف یک فایل از مخزن (تاریخچه‌ی گیت همچنان نسخه‌ی قبلی را نگه می‌دارد)
+  async deleteFile(path, message) {
+    const file = await this.request(`/contents/${path}?ref=${this.branch}`);
+    return this.request(`/contents/${path}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ message, sha: file.sha, branch: this.branch })
+    });
   }
 };
