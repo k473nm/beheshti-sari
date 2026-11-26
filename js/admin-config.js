@@ -50,14 +50,14 @@ const SECTIONS = {
     file: 'data/honors.json',
     addTo: 'end',
     sort: (a, b) => b.year - a.year,
-       { name: 'description', label: 'توضیح (اختیاری)', kind: 'textarea' },
-      { name: 'image', label: 'عکس (اختیاری)', kind: 'image', folder: 'images/honors' }
+    describe: item => `${faDigits(item.year)} — ${item.title}`,
     fields: [
       { name: 'title', label: 'عنوان افتخار', kind: 'text', required: true },
       { name: 'category', label: 'دسته', kind: 'select', required: true, options: HONOR_CATEGORIES },
       { name: 'year', label: 'سال (شمسی)', kind: 'year', required: true, currentYear: true },
       { name: 'student', label: 'نام دانش‌آموز (اختیاری؛ فقط با رضایت خودش و خانواده)', kind: 'text' },
-      { name: 'description', label: 'توضیح (اختیاری)', kind: 'textarea' }
+      { name: 'description', label: 'توضیح (اختیاری)', kind: 'textarea' },
+      { name: 'image', label: 'عکس (اختیاری)', kind: 'image', folder: 'images/honors' }
     ]
   },
 
