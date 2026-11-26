@@ -27,21 +27,23 @@ function el(tag, className, text) {
   return node;
 }
 
+// ---------- عکس بالای کارت ----------
+function cardImage(path, alt = '') {
+  const img = el('img', 'news-img');
+  img.src = path;
+  img.alt = alt;
+  img.loading = 'lazy';
+  return img;
+}
+
 // ---------- کارت خبر (لینک به صفحه‌ی همان خبر) ----------
 function newsCard(item) {
   const card = el('a', 'card news-card');
   card.href = `news.html?id=${encodeURIComponent(item.id)}`;
-  if (item.image) {
-    const img = el('img', 'news-img');
-    img.src = item.image;
-    img.alt = '';
-    img.loading = 'lazy';
-    card.append(img);
-  }
+  if (item.image) card.append(cardImage(item.image));
   card.append(el('time', '', item.date), el('b', '', item.title), el('p', '', item.summary));
   return card;
 }
-
 
 // ---------- تبدیل رقم‌های انگلیسی به فارسی ----------
 function faDigits(value) {
