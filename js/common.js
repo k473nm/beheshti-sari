@@ -67,3 +67,23 @@ if (footerText) {
     if (taps.length >= 5) location.href = 'admin.html';
   });
 }
+
+
+// ---------- برچسب‌های مرکز دانلود و کانال‌ها ----------
+const DOWNLOAD_CATEGORIES = { forms: 'فرم‌ها', schedules: 'برنامه‌ها', resources: 'منابع آموزشی', other: 'سایر' };
+
+const CHANNEL_PLATFORMS = {
+  eitaa: { label: 'ایتا', icon: '📣' },
+  bale: { label: 'بله', icon: '💬' },
+  telegram: { label: 'تلگرام', icon: '✈️' },
+  instagram: { label: 'اینستاگرام', icon: '📷' },
+  rubika: { label: 'روبیکا', icon: '📲' },
+  website: { label: 'وب‌سایت', icon: '🌐' }
+};
+
+// حجم فایل به متن فارسی (مثلاً ۲۵۶ کیلوبایت، ۲٫۴ مگابایت)
+function formatSize(bytes) {
+  if (!bytes) return '';
+  if (bytes < 1024 * 1024) return `${faDigits(Math.max(1, Math.round(bytes / 1024)))} کیلوبایت`;
+  return `${faDigits((bytes / 1048576).toFixed(1)).replace('.', '٫')} مگابایت`;
+}
