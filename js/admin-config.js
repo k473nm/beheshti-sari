@@ -1,7 +1,12 @@
 // تعریف بخش‌های پنل. برای افزودن یک بخش جدید (مثلاً دبیران) فقط یک مورد به SECTIONS اضافه کن.
 //
-// kind: text | textarea | select | date | year | image
+// kind: text | textarea | select | date | year | url | image | file
 // addTo: 'start' = جدیدترین بالای فایل، 'end' = ته فایل (سایت خودش مرتب می‌کند)
+
+// ---------- محدودیت آپلود فایل ----------
+// فایل‌ها از خود دامنه‌ی سایت پخش می‌شوند؛ پس نوع‌های فعال (html، js، svg، exe) عمداً مجاز نیستند.
+const UPLOAD_EXTENSIONS = ['pdf', 'png', 'jpg', 'jpeg', 'webp', 'docx', 'doc', 'pptx', 'ppt', 'xlsx', 'xls', 'txt', 'zip'];
+const UPLOAD_MAX_MB = 10;
 
 // ---------- ابزارهای عدد و تاریخ ----------
 const toAscii = text => String(text)
@@ -74,6 +79,34 @@ const SECTIONS = {
       { name: 'type', label: 'نوع', kind: 'select', required: true, options: EVENT_TYPES },
       { name: 'date', label: 'تاریخ شروع (مثل 1405/09/04)', kind: 'date', required: true, digits: 'en', today: true },
       { name: 'endDate', label: 'تاریخ پایان (اختیاری؛ برای رویداد چندروزه)', kind: 'date', digits: 'en' }
+    ]
+  },
+
+  downloads: {
+    label: 'مرکز دانلود',
+    noun: 'فایل',
+    file: 'data/downloads.json',
+    addTo: 'start',
+    describe: item => `${item.title} (${(item.ext || '').toUpperCase()})`,
+    fields: [
+      { name: 'title', label: 'عنوان فایل', kind: 'text', required: true },
+      { name: 'category', label: 'دسته', kind: 'select', required: true, options: DOWNLOAD_CATEGORIES },
+      { name: 'description', label: 'توضیح کوتاه (اختیاری)', kind: 'text' },
+      { name: 'file', label: `فایل (${UPLOAD_EXTENSIONS.join('، ')} — حداکثر ${UPLOAD_MAX_MB} مگابایت)`, kind: 'file', required: true, folder: 'downloads' }
+    ]
+  },
+
+  channels: {
+    label: 'کانال‌ها',
+    noun: 'کانال',
+    file: 'data/channels.json',
+    addTo: 'end',
+    describe: item => `${CHANNEL_PLATFORMS[item.platform]?.label ?? item.platform} — ${item.title}`,
+    fields: [
+      { name: 'title', label: 'عنوان (مثلاً کانال ایتا)', kind: 'text', required: true },
+      { name: 'platform', label: 'پیام‌رسان', kind: 'select', required: true,
+        options: Object.fromEntries(Object.entries(CHANNEL_PLATFORMS).map(([key, { label }]) => [key, label])) },
+      { name: 'url', label: 'لینک (با https:// شروع شود)', kind: 'url', required: true }
     ]
   }
 };
