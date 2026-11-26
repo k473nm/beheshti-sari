@@ -2,7 +2,7 @@
 // هر قاعده: [انتخابگر CSS، جهت]. جهت 'alt' یعنی یکی از راست و یکی از چپ.
 const REVEAL_RULES = [
   ['.section h2, .page-title, .month-title', 'right'],
-  ['.quick .card, .news-card, .honor-card, .stat', 'up'],
+  ['.quick .card, .news-card, .honor-card, .stat, .download-card, .channel', 'up'],
   ['.gallery figure', 'alt'],
   ['.location-card, .event', 'right'],
   ['.since > *', 'up']
