@@ -37,6 +37,7 @@ function renderStats() {
   const items = [['همه‌ی افتخارات', honors.length], ...categoryCounts().map(([, label, n]) => [label, n])];
   for (const [label, count] of items) {
     const card = el('div', 'card stat');
+        if (h.image) card.append(cardImage(h.image, h.title));
     const number = el('b', 'stat-num', faDigits(0));
     card.append(number, el('small', '', label));
     statsBox.append(card);
