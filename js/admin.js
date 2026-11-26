@@ -36,6 +36,8 @@ function button(text, onClick, className = '') {
 }
 
 const nextId = data => data.reduce((max, item) => Math.max(max, item.id), 0) + 1;
+const isUpload = field => field.kind === 'image' || field.kind === 'file';
+const fileExtension = name => (name.includes('.') ? name.split('.').pop().toLowerCase() : '');
 
 // کوچک کردن عکس قبل از آپلود (حداکثر عرض ۱۲۰۰ پیکسل)
 function resizeImage(file, maxWidth = 1200, quality = 0.85) {
@@ -56,6 +58,17 @@ function resizeImage(file, maxWidth = 1200, quality = 0.85) {
   });
 }
 
+// نوع و حجم فایل را قبل از آپلود بررسی می‌کند
+function checkUpload(file) {
+  const ext = fileExtension(file.name);
+  if (!UPLOAD_EXTENSIONS.includes(ext)) {
+    throw new FormError(`نوع فایل «${ext || 'نامشخص'}» مجاز نیست. فقط: ${UPLOAD_EXTENSIONS.join('، ')}`);
+  }
+  if (file.size > UPLOAD_MAX_MB * 1024 * 1024) {
+    throw new FormError(`حجم فایل (${formatSize(file.size)}) بیشتر از ${faDigits(UPLOAD_MAX_MB)} مگابایت است.`);
+  }
+}
+
 // ---------- ساخت فیلد و اعتبارسنجی ----------
 function buildField(field) {
   const wrapper = el('label', 'field');
@@ -67,12 +80,13 @@ function buildField(field) {
     for (const [value, label] of Object.entries(field.options)) input.append(new Option(label, value));
   } else {
     input = el('input');
-    input.type = field.kind === 'image' ? 'file' : 'text';
+    input.type = isUpload(field) ? 'file' : 'text';
     if (field.kind === 'image') input.accept = 'image/*';
-    if (field.kind === 'date' || field.kind === 'year') {
-      input.inputMode = 'numeric';
+    if (field.kind === 'file') input.accept = UPLOAD_EXTENSIONS.map(ext => `.${ext}`).join(',');
+    if (['date', 'year', 'url'].includes(field.kind)) {
       input.dir = 'ltr';
-      input.placeholder = field.kind === 'year' ? '1404' : '1405/09/04';
+      input.inputMode = field.kind === 'url' ? 'url' : 'numeric';
+      input.placeholder = { date: '1405/09/04', year: '1404', url: 'https://' }[field.kind];
     }
   }
   wrapper.append(el('span', '', field.label), input);
@@ -96,12 +110,16 @@ function parseField(field, raw) {
     if (!Number.isInteger(year) || year < 1300 || year > 1500) throw new FormError('سال باید یک سال شمسی چهار رقمی باشد، مثل 1404.');
     return year;
   }
+  if (field.kind === 'url') {
+    if (!/^https?:\/\/\S+$/i.test(value)) throw new FormError('لینک باید یک آدرس معتبر باشد و با https:// شروع شود.');
+    return value;
+  }
   return value;
 }
 
 // ---------- ویرایشگر یک بخش ----------
 function createEditor(config) {
-  const imageField = config.fields.find(field => field.kind === 'image');
+  const uploadField = config.fields.find(isUpload);
   const controls = {};     // نام فیلد → عنصر ورودی
   let items = [];          // فهرست فعلی
   let editingId = null;    // null یعنی فرم «ثبت جدید» است
@@ -116,26 +134,30 @@ function createEditor(config) {
     form.append(wrapper);
   }
 
+  // پیش‌نمایش عکس، یا نام و حجم فایل انتخاب‌شده
   const preview = el('img', 'preview');
-  const imageNote = el('p', 'muted', 'عکس فعلی حفظ می‌شود؛ برای تعویض، عکس جدید انتخاب کن.');
+  const fileInfo = el('p', 'muted');
+  const keepNote = el('p', 'muted', 'مورد فعلی حفظ می‌شود؛ برای تعویض، فایل جدید انتخاب کن.');
   preview.alt = '';
-  if (imageField) {
-    form.append(imageNote, preview);
-    controls[imageField.name].addEventListener('change', () => {
-      const file = controls[imageField.name].files[0];
-      preview.hidden = !file;
-      if (file) preview.src = URL.createObjectURL(file);
+  if (uploadField) {
+    form.append(keepNote, fileInfo, preview);
+    controls[uploadField.name].addEventListener('change', () => {
+      const file = controls[uploadField.name].files[0];
+      preview.hidden = !(file && uploadField.kind === 'image');
+      if (!preview.hidden) preview.src = URL.createObjectURL(file);
+      fileInfo.textContent = file && uploadField.kind === 'file' ? `${file.name} — ${formatSize(file.size)}` : '';
     });
   }
 
   const submit = el('button');
   submit.type = 'submit';
   const cancel = button('انصراف از ویرایش', () => resetForm(), 'secondary');
-  form.append(el('div', 'form-actions'));
-  form.lastChild.append(submit, cancel);
+  const actions = el('div', 'form-actions');
+  actions.append(submit, cancel);
+  form.append(actions);
 
   const list = el('div');
-  root.append(heading, form, el('h2', '', `${config.label} ثبت‌شده`), list);
+  root.append(heading, form, el('h2', '', `${config.noun}\u200cهای ثبت‌شده`), list);
 
   // --- حالت‌های فرم ---
   function resetForm() {
@@ -146,7 +168,8 @@ function createEditor(config) {
       if (field.currentYear) controls[field.name].value = todayJalali().slice(0, 4);
     }
     preview.hidden = true;
-    imageNote.hidden = true;
+    fileInfo.textContent = '';
+    keepNote.hidden = true;
     cancel.hidden = true;
     heading.textContent = `${config.noun} جدید`;
     submit.textContent = `ثبت ${config.noun}`;
@@ -156,9 +179,9 @@ function createEditor(config) {
     resetForm();
     editingId = item.id;
     for (const field of config.fields) {
-      if (field.kind !== 'image') controls[field.name].value = item[field.name] ?? '';
+      if (!isUpload(field)) controls[field.name].value = item[field.name] ?? '';
     }
-    imageNote.hidden = !(imageField && item[imageField.name]);
+    keepNote.hidden = !(uploadField && item[uploadField.name]);
     cancel.hidden = false;
     heading.textContent = `ویرایش ${config.noun}`;
     submit.textContent = 'ذخیره‌ی تغییرات';
@@ -169,9 +192,16 @@ function createEditor(config) {
   function readValues() {
     const values = {};
     for (const field of config.fields) {
-      if (field.kind === 'image') continue;
+      if (isUpload(field)) continue;
       const value = parseField(field, controls[field.name].value.replace(/\r\n/g, '\n'));
       if (value !== undefined) values[field.name] = value;
+    }
+    if (uploadField) {
+      const file = controls[uploadField.name].files[0];
+      if (!file && uploadField.required && editingId === null) {
+        throw new FormError(`لطفاً یک ${uploadField.kind === 'file' ? 'فایل' : 'عکس'} انتخاب کن.`);
+      }
+      if (file && uploadField.kind === 'file') checkUpload(file);
     }
     const problem = config.validate?.(values);
     if (problem) throw new FormError(problem);
@@ -181,28 +211,38 @@ function createEditor(config) {
   // --- ذخیره ---
   async function save(values) {
     const { data, sha } = await github.readJson(config.file);   // همیشه آخرین نسخه‌ی فایل
-    const existing = editingId === null ? {} : data.find(item => item.id === editingId);
+    const existing = editingId === null ? {} : data.find(entry => entry.id === editingId);
     if (!existing) throw new FormError('این مورد دیگر وجود ندارد. صفحه را رفرش کن.');
 
-    const item = {
-      id: editingId ?? nextId(data),
-      ...(imageField && existing[imageField.name] && { [imageField.name]: existing[imageField.name] }),
-      ...values
-    };
+    // فایل یا عکس قبلی (با ext و size) حفظ می‌شود، مگر اینکه مورد جدیدی انتخاب شود
+    const kept = {};
+    if (uploadField) {
+      for (const key of [uploadField.name, 'ext', 'size']) {
+        if (existing[key] !== undefined) kept[key] = existing[key];
+      }
+    }
+    const item = { id: editingId ?? nextId(data), ...kept, ...values };
 
-    const file = imageField && controls[imageField.name].files[0];
+    const oldPath = uploadField ? existing[uploadField.name] : undefined;
+    const file = uploadField && controls[uploadField.name].files[0];
     if (file) {
-      const path = `${imageField.folder}/${Date.now()}.jpg`;
-      await github.uploadBlob(path, await resizeImage(file), `Add ${config.noun} image`);
-      item[imageField.name] = path;
+      const isImage = uploadField.kind === 'image';
+      const ext = isImage ? 'jpg' : fileExtension(file.name);
+      const path = `${uploadField.folder}/${Date.now()}.${ext}`;
+      await github.uploadBlob(path, isImage ? await resizeImage(file) : file, `Add ${config.noun} file`);
+      item[uploadField.name] = path;
+      if (!isImage) Object.assign(item, { ext, size: file.size });
     }
 
-    let updated;
-    if (editingId !== null) updated = data.map(entry => (entry.id === editingId ? item : entry));
-    else updated = config.addTo === 'start' ? [item, ...data] : [...data, item];
+    const updated = editingId !== null
+      ? data.map(entry => (entry.id === editingId ? item : entry))
+      : config.addTo === 'start' ? [item, ...data] : [...data, item];
 
     await github.writeJson(config.file, updated, sha, `${editingId === null ? 'Add' : 'Edit'} ${config.noun} ${item.id}`);
     items = updated;
+
+    // فایل جایگزین‌شده پاک شود (خطای احتمالی حذف مانع کار نشود)
+    if (file && oldPath) await github.deleteFile(oldPath, `Replace ${config.noun} file`).catch(() => {});
   }
 
   form.addEventListener('submit', async event => {
@@ -228,6 +268,8 @@ function createEditor(config) {
       const { data, sha } = await github.readJson(config.file);
       items = data.filter(entry => entry.id !== item.id);
       await github.writeJson(config.file, items, sha, `Delete ${config.noun} ${item.id}`);
+      const path = uploadField && item[uploadField.name];
+      if (path) await github.deleteFile(path, `Delete ${config.noun} file`).catch(() => {});   // خطای حذف فایل مانع کار نشود
       if (editingId === item.id) resetForm();
       renderList();
       setStatus('حذف شد. تا یکی دو دقیقه دیگر از سایت هم برداشته می‌شود.');
@@ -245,9 +287,9 @@ function createEditor(config) {
     }
     for (const item of [...items].sort(config.sort ?? (() => 0))) {
       const row = el('div', 'admin-row');
-      const actions = el('div', 'row-actions');
-      actions.append(button('ویرایش', () => startEdit(item), 'secondary'), button('حذف', () => remove(item), 'danger'));
-      row.append(el('span', '', config.describe(item)), actions);
+      const rowActions = el('div', 'row-actions');
+      rowActions.append(button('ویرایش', () => startEdit(item), 'secondary'), button('حذف', () => remove(item), 'danger'));
+      row.append(el('span', '', config.describe(item)), rowActions);
       list.append(row);
     }
   }
