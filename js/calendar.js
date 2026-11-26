@@ -43,4 +43,7 @@ function eventRow(ev) {
   return row;
 }
 
+  <script src="js/common.js?v=3"></script>
+  <script src="js/reveal.js"></script>
+  <script src="js/calendar.js"></script>
 init();
