@@ -18,3 +18,14 @@ async function renderNews() {
 }
 
 renderNews();
+
+
+// ---------- سال‌های گذشته از تأسیس (بر اساس سال شمسیِ امروز) ----------
+const FOUNDED_YEAR = 1369;
+const sinceYears = document.getElementById('since-years');
+
+if (sinceYears) {
+  const parts = new Intl.DateTimeFormat('fa-IR-u-ca-persian-nu-latn', { year: 'numeric' }).formatToParts(new Date());
+  const years = Number(parts.find(part => part.type === 'year')?.value) - FOUNDED_YEAR;
+  if (years > 0) sinceYears.textContent = faDigits(years);   // اگر محاسبه نشد، همان ۳۶ ثابت می‌ماند
+}
