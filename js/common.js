@@ -87,3 +87,44 @@ function formatSize(bytes) {
   if (bytes < 1024 * 1024) return `${faDigits(Math.max(1, Math.round(bytes / 1024)))} کیلوبایت`;
   return `${faDigits((bytes / 1048576).toFixed(1)).replace('.', '٫')} مگابایت`;
 }
+
+
+// ---------- آیکون تب (موقت تا آمدن لوگو) ----------
+if (!document.querySelector('link[rel~="icon"]')) {
+  const icon = document.createElement('link');
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🎓</text></svg>';
+  icon.rel = 'icon';
+  icon.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  document.head.append(icon);
+}
+
+// ---------- جلوه‌های ظاهری هنگام اسکرول ----------
+(function addScrollEffects() {
+  if (document.querySelector('.admin')) return;   // پنل مدیریت ساده بماند
+
+  const progress = el('div', 'scroll-progress');
+  const toTop = el('button', 'to-top', '↑');
+  toTop.type = 'button';
+  toTop.setAttribute('aria-label', 'بازگشت به بالای صفحه');
+  toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  document.body.append(progress, toTop);
+
+  const navbar = document.querySelector('.navbar');
+  let waiting = false;   // برای اینکه در هر فریم فقط یک بار محاسبه شود
+
+  function update() {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
+    toTop.classList.toggle('show', window.scrollY > 600);
+    navbar?.classList.toggle('scrolled', window.scrollY > 24);
+    waiting = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!waiting) {
+      waiting = true;
+      requestAnimationFrame(update);
+    }
+  }, { passive: true });
+  update();
+})();
