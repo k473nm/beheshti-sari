@@ -331,3 +331,65 @@ main, .footer { overflow-x: hidden; overflow-x: clip; }
   display: grid; place-items: center; flex-shrink: 0; width: 48px; height: 48px;
   font-size: 1.5rem; border-radius: 14px; background: rgba(34, 211, 238, .1);
 }
+
+
+/* ---------- ریزه‌کاری‌های ظاهری ---------- */
+::selection { background: rgba(34, 211, 238, .3); color: #fff; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+html { scrollbar-width: thin; scrollbar-color: var(--border) var(--bg); }
+
+/* درخشش ملایم پشت کل صفحه */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(600px 400px at 85% 8%, rgba(34, 211, 238, .08), transparent 70%),
+    radial-gradient(700px 500px at 10% 90%, rgba(37, 99, 235, .10), transparent 70%);
+}
+
+.card:hover { box-shadow: 0 10px 30px rgba(34, 211, 238, .08); }
+
+.navbar { transition: background .3s, box-shadow .3s; }
+.navbar.scrolled { background: rgba(5, 13, 25, .92); box-shadow: 0 8px 30px rgba(0, 0, 0, .35); }
+
+.scroll-progress {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 20; pointer-events: none;
+  transform: scaleX(0); transform-origin: right;   /* در صفحه‌ی راست‌چین از راست پر می‌شود */
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+
+.to-top {
+  position: fixed; bottom: 20px; inset-inline-end: 20px; z-index: 15;
+  width: 44px; height: 44px; font: inherit; font-size: 1.2rem; cursor: pointer;
+  color: var(--accent); background: rgba(5, 13, 25, .85); backdrop-filter: blur(8px);
+  border: 1px solid var(--border); border-radius: 50%;
+  opacity: 0; transform: translateY(12px); pointer-events: none;
+  transition: opacity .3s, transform .3s, border-color .2s;
+}
+.to-top.show { opacity: 1; transform: none; pointer-events: auto; }
+.to-top:hover { border-color: var(--accent); }
+
+/* ---------- صفحه‌ی ۴۰۴ ---------- */
+.nf { display: grid; justify-items: center; gap: 14px; max-width: 640px; margin: 0 auto; padding: 64px 24px 24px; text-align: center; }
+.nf-icon { font-size: 3rem; animation: nf-float 3.5s ease-in-out infinite; }
+.nf-code {
+  margin: 0; font-size: clamp(6rem, 24vw, 12rem); font-weight: 700; line-height: 1;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 40px rgba(34, 211, 238, .25));
+}
+.nf h1 { font-size: clamp(1.4rem, 4vw, 2rem); }
+.nf-actions, .nf-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.nf-actions { margin-top: 10px; }
+.nf-links { margin-top: 18px; }
+.btn.ghost { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+.nf-links a {
+  padding: 4px 14px; font-size: .9rem; color: var(--muted);
+  border: 1px solid var(--border); border-radius: 999px; transition: color .2s, border-color .2s;
+}
+.nf-links a:hover { color: var(--accent); border-color: var(--accent); }
+@keyframes nf-float { 50% { transform: translateY(-10px) rotate(6deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .nf-icon { animation: none; }
+}
